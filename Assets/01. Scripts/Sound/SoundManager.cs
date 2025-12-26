@@ -11,7 +11,7 @@ public interface ISoundManager
     void StopSound(SoundType p_SoundType);
 }
 
-public class SoundManager : MonoBehaviour, ISoundManager
+public class SoundManager : ISoundManager
 {
     [SerializeField] private AudioMixer m_MainMixer;
 
@@ -28,9 +28,10 @@ public class SoundManager : MonoBehaviour, ISoundManager
         set { m_IsMute = value; }
     }
 
-    private void Start()
+    public SoundManager(IDataManager p_Datamanager, AudioMixer p_MainMixer)
     {
-        m_DataManager = Bootstrapper.Container.Resolve<IDataManager>();
+        m_DataManager = p_Datamanager;
+        m_MainMixer = p_MainMixer;
         InitAudioSources();
     }
 
@@ -46,7 +47,6 @@ public class SoundManager : MonoBehaviour, ISoundManager
             SoundType type = (SoundType)i;
 
             GameObject obj = new GameObject(type.ToString());
-            obj.transform.SetParent(transform);
 
             AudioSource source = obj.AddComponent<AudioSource>();
             source.playOnAwake = false;

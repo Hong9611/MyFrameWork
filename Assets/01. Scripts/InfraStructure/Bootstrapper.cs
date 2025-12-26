@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 
 public class Bootstrapper : MonoBehaviour
 {
     public static DiContainer Container { get; private set; }
+    [SerializeField] private AudioMixer m_MainMixer;
 
     private void Awake()
     {
@@ -32,12 +34,12 @@ public class Bootstrapper : MonoBehaviour
         //Sound 관련
         p_Container.RegisterSingleton<ISoundManager>(c =>
         {
-            var soundManager = GameObject.FindObjectOfType<SoundManager>();
-            if (soundManager == null)
-            {
-                Debug.LogError("SoundManager를 씬에서 찾을 수 없습니다. 씬에 SoundManager가 있어야 합니다.");
-            }
-            return soundManager;
+            var dataManager = c.Resolve<IDataManager>();
+
+            return new SoundManager(
+                dataManager,   // DI로 받은 DataManager
+                m_MainMixer    // Inspector에서 할당한 AudioMixer
+            );
         });
 
         //ObjectPool 관련
